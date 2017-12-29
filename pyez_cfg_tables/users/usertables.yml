@@ -1,0 +1,19 @@
+UserConfigTable:
+  set: system/login/user
+  key-field:
+    username
+  view: UserConfigView
+
+UserConfigView:
+  groups:
+    auth: authentication
+  fields:
+    username: name
+    userclass: { class : { 'default' : 'super-user' }}
+    uid: { uid: { 'type': 'int', 'minValue':100, 'maxValue':64000 }}
+    fullname: full-name
+    sshkeys: authentication/ssh-rsa/name
+  fields_auth:
+    $password: encrypted-password
+    password: plain-text-password-value
+

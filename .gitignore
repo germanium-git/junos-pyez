@@ -1,0 +1,7 @@
+# Created by .ignore support plugin (hsz.mobi)
+.idea
+*.html
+*.txt
+j_settings_nogit.cfg
+inventory/lab_nogit.yml
+tmp/usercfg*
