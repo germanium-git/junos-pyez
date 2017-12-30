@@ -19,14 +19,13 @@ from ansi2html import Ansi2HTMLConverter
 from jinja2 import Template
 from configobj import ConfigObj
 
-import email
-"""
+
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
-from email.MIMEBase import MIMEBase
-from email.Utils import formatdate
-"""
+from email.mime.base import MIMEBase
+from email.utils import formatdate
+
 
 base_path = os.path.dirname(os.path.abspath(__file__))
 config_path = os.path.join(base_path, "j_settings.cfg")
@@ -291,6 +290,7 @@ def commit_configuration(dev, ticket, username):
     """
 
     print("Committing the configuration")
+    commited = False
     try:
         commited = dev.cu.commit(comment=ticket + "/" + username)
     except CommitError as err:
@@ -298,7 +298,7 @@ def commit_configuration(dev, ticket, username):
         print("Unlocking the configuration")
     try:
         dev.cu.unlock()
-    except UnlockError:
+    except UnlockError as err:
         print("Unable to unlock configuration {}".format(err))
     return commited
 
