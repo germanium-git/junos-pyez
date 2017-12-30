@@ -110,13 +110,20 @@ def emailout(to_addr, subject, body_text, files_to_attach):
             msg = "Error opening attachment file {}".format(file_to_attach)
             print(msg)
             sys.exit()
-    server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
-    server.ehlo()
-    if SMTP_TYPE == "SECURE":
-        server.starttls()
+    # Send the message via Google SSL
+    if SMTP_TYPE == "SSL":
+        server = smtplib.SMTP_SSL(SMTP_SERVER + ':' + SMTP_PORT)
         server.login(user, password)
-    server.sendmail(from_addr, [to_addr], msg.as_string())
-    server.quit()
+        server.sendmail(from_addr, [to_addr], msg.as_string())
+        server.quit()
+    else:
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.ehlo()
+        if SMTP_TYPE == "SECURE":
+            server.starttls()
+            server.login(user, password)
+        server.sendmail(from_addr, [to_addr], msg.as_string())
+        server.quit()
 
 
 def start_logging(scriptname):
