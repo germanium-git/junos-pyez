@@ -9,21 +9,21 @@ import os
 from termcolor import cprint
 from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
-from jnpr.junos.exception import ConnectError, ConnectAuthError
+from jnpr.junos.exception import ConnectError
+from jnpr.junos.exception import ConnectAuthError
 from jnpr.junos.exception import LockError
 from jnpr.junos.exception import UnlockError
 from jnpr.junos.exception import ConfigLoadError
 from jnpr.junos.exception import CommitError
-from jnpr.junos.exception import RpcError
+#from jnpr.junos.exception import RpcError
 from ansi2html import Ansi2HTMLConverter
 from jinja2 import Template
 from configobj import ConfigObj
 
-
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
-from email.mime.base import MIMEBase
+#from email.mime.base import MIMEBase
 from email.utils import formatdate
 
 
@@ -81,7 +81,12 @@ def read_inventory(inputfile):
             invyaml = f.read()
     except IOError as err:
         print(err)
-        sys.exit()
+        onlyfiles = [f for f in os.listdir(INVENTORY_FOLDER) if os.path.isfile(os.path.join(INVENTORY_FOLDER, f))]
+        inv_list = []
+        for file in onlyfiles:
+            inv_list.append(file.split('_')[-1][:-4])
+        print('These are the valid inventories: {}'.format(inv_list))
+        sys.exit(1)
     devices = yaml.load(invyaml)
     return devices
 
@@ -100,16 +105,14 @@ def emailout(to_addr, subject, body_text, files_to_attach):
         try:
             with open(file_to_attach, "rb") as fh:
                 data = fh.read()
-            attachment = MIMEBase('application', "octet-stream")
-            attachment.set_payload(data)
-            Encoders.encode_base64(attachment)
-            header = 'Content-Disposition', 'attachment; filename="{}"'.format(os.path.basename(file_to_attach))
+            attachment = MIMEApplication(data)
+            header = ('Content-Disposition', 'attachment', 'filename={}'.format(os.path.basename(file_to_attach)))
             attachment.add_header(*header)
             msg.attach(attachment)
         except IOError:
             msg = "Error opening attachment file {}".format(file_to_attach)
             print(msg)
-            sys.exit()
+            sys.exit(1)
     # Send the message via Google SSL
     if SMTP_TYPE == "SSL":
         server = smtplib.SMTP_SSL(SMTP_SERVER + ':' + SMTP_PORT)
@@ -201,7 +204,7 @@ def load_yaml(path):
             vars = f.read()
     except IOError as err:
         print(err)
-        sys.exit()
+        sys.exit(1)
     return yaml.load(vars)
 
 
@@ -377,7 +380,7 @@ def update_configuration(dev, cfg, ticket, nwadmin):
 
 
 def convert_string_to_list(x):
-    if isinstance(x, basestring):
+    if isinstance(x, str):
         return [x]
     else:
         return x
