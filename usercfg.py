@@ -149,10 +149,12 @@ def main():
     # Revert the output back to original settings
     stop_logging(outfile, old_stdout)
 
+    outfile_html = ('{}.html'.format(outfile.name.split('.')[0]))
+
     # Send a copy of log file via email to the recipients
     if not email_spec:
         email_spec = input("Email[%s]: " % pwd.getpwuid(os.getuid())[4]) or pwd.getpwuid(os.getuid())[4]
-        emailout(email_spec, 'Netops', 'This is the result of the script you ran', outfile.name)
+        emailout(email_spec, 'Netops', 'This is the result of the script you ran', outfile_html)
 
 
 if __name__ == "__main__":

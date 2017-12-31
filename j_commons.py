@@ -106,8 +106,7 @@ def emailout(to_addr, subject, body_text, files_to_attach):
             with open(file_to_attach, "rb") as fh:
                 data = fh.read()
             attachment = MIMEApplication(data)
-            header = ('Content-Disposition', 'attachment', 'filename={}'.format(os.path.basename(file_to_attach)))
-            attachment.add_header(*header)
+            attachment.add_header('Content-Disposition', 'attachment', filename=os.path.basename(file_to_attach))
             msg.attach(attachment)
         except IOError:
             msg = "Error opening attachment file {}".format(file_to_attach)
